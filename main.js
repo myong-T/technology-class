@@ -2,11 +2,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const inputField = document.getElementById("todo-input");
     const addButton = document.getElementById("add-btn");
     const todoList = document.getElementById("todo-list");
+    const calendar = document.getElementById("calendar");
 
-    // 🟢 로컬 저장소에서 저장된 할 일 불러오기
+    let selectedDate = new Date().toISOString().split("T")[0]; // 기본 날짜: 오늘
+
+    // 🟢 날짜 변경 시 할 일 업데이트
+    calendar.addEventListener("change", () => {
+        selectedDate = calendar.value;
+        loadTodos();
+    });
+
+    // 🟢 할 일 불러오기 (선택한 날짜 기준)
     const loadTodos = () => {
-        const savedTodos = JSON.parse(localStorage.getItem("todos")) || [];
-        savedTodos.forEach(todo => addTodo(todo.text, todo.completed));
+        const savedTodos = JSON.parse(localStorage.getItem("todos")) || {};
+        todoList.innerHTML = ""; // 기존 목록 초기화
+        (savedTodos[selectedDate] || []).forEach(todo => addTodo(todo.text, todo.completed));
     };
 
     // 🟢 할 일 추가 함수
@@ -43,16 +53,19 @@ document.addEventListener("DOMContentLoaded", () => {
         saveTodos();
     };
 
-    // 🟢 할 일 저장 함수 (로컬 저장소)
+    // 🟢 할 일 저장 (날짜별 저장)
     const saveTodos = () => {
-        const todos = [];
+        const savedTodos = JSON.parse(localStorage.getItem("todos")) || {};
+        savedTodos[selectedDate] = [];
+
         document.querySelectorAll(".todo-item").forEach(li => {
-            todos.push({
+            savedTodos[selectedDate].push({
                 text: li.querySelector("span").textContent,
                 completed: li.querySelector("input").checked
             });
         });
-        localStorage.setItem("todos", JSON.stringify(todos));
+
+        localStorage.setItem("todos", JSON.stringify(savedTodos));
     };
 
     // 🟢 추가 버튼 클릭 시 할 일 추가
@@ -69,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // 🟢 페이지 로드 시 저장된 할 일 불러오기
+    // 🟢 페이지 로드 시 기본 날짜 설정 및 할 일 불러오기
+    calendar.value = selectedDate;
     loadTodos();
 });

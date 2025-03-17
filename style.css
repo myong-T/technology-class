@@ -24,6 +24,15 @@ h1 {
     color: #388e3c; /* 진한 녹색 */
 }
 
+/* 캘린더 스타일 */
+#calendar {
+    display: block;
+    margin: 10px auto;
+    padding: 8px;
+    border: 2px solid #81c784;
+    border-radius: 5px;
+}
+
 /* 입력 필드 & 버튼 */
 .input-container {
     display: flex;
